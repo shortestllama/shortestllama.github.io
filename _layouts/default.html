@@ -8,7 +8,11 @@
     {% seo %}
   </head>
   <body>
-    {% include navigation.html %}
-    {{ content }}
+    <div class="wrapper">
+      {% include navigation.html %}
+      <main class="content">
+        {{ content }}
+      </main>
+    </div>
   </body>
 </html>
