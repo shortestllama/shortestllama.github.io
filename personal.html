@@ -2,4 +2,12 @@
 layout: default
 title: Hobbies
 ---
-<h1>My Life</h1>
+<h1>Personal Interests</h1>
+
+<ul>
+  {% for item in site.personal %}
+    <li>
+      <h2><a href="{{ item.url }}">{{ item.title }}</a></h2>
+    </li>
+  {% endfor %}
+</ul>

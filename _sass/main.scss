@@ -20,7 +20,7 @@ body, html {
 }
 
 .sidebar {
-  width: 80px;
+  width: 100px;
   background-color: $silver;
   color: $black;
   padding: 20px;
@@ -29,6 +29,16 @@ body, html {
   bottom: 0;
   left: 0;
   overflow-y: auto;
+}
+
+.sidebar h3 a {
+  color: $honolulu-blue;
+  text-decoration: none;
+
+  &:hover {
+    color: $honolulu-blue;
+    text-decoration: none;
+  }
 }
 
 .content {
@@ -57,4 +67,3 @@ nav a:hover {
   color: $honolulu-blue;
   text-decoration: underline;
 }
-

@@ -1,5 +1,9 @@
+title: Jack Ford
+
 collections:
   authors:
+    output: true
+  personal:
     output: true
 
 defaults:
@@ -13,6 +17,11 @@ defaults:
       type: "posts"
     values:
       layout: "post"
+  - scope:
+      path: ""
+      type: "personal"
+    values:
+      layout: "personal"
   - scope:
       path: ""
     values:
