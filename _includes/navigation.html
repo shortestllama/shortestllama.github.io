@@ -2,6 +2,11 @@
   <nav>
     <ul>
       {% for item in site.data.navigation %}
+        <h1>
+          <a href="/">
+            Jack Ford
+          </a>
+        </h1>
         <li>
           <a href="{{ item.link }}"{% if page.url == item.link %} class="current"{% endif %}>
             {{ item.name }}
