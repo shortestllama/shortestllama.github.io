@@ -1,6 +1,8 @@
 title: Jack Ford
 
 collections:
+  projects:
+    output: true
   writeups:
     output: true
   personal:
@@ -9,9 +11,14 @@ collections:
 defaults:
   - scope:
       path: ""
-      type: "posts"
+      type: "projects"
     values:
-      layout: "post"
+      layout: "projects"
+  - scope:
+      path: ""
+      type: "writeups"
+    values:
+      layout: "writeups"
   - scope:
       path: ""
       type: "personal"
@@ -19,9 +26,9 @@ defaults:
       layout: "personal"
   - scope:
       path: ""
-      type: "writeups"
+      type: "posts"
     values:
-      layout: "writeups"
+      layout: "post"
   - scope:
       path: ""
     values:

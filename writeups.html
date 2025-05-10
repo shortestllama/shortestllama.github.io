@@ -5,9 +5,12 @@ title: Writeups
 <h1>CTF Writeups</h1>
 
 <ul>
-  {% for item in site.writeups %}
+  {% for writeup in site.writeups %}
     <li>
-      <h2><a href="{{ item.url }}">{{ item.title }}</a></h2>
+      <h2><a href="{{ writeup.url }}">{{ writeup.title }}</a></h2>
+      <span>{{ writeup.source }}</span> -
+      <span>{{ writeup.date | date_to_string }}</span> -
+      <span>{{ writeup.read_time }}</span>
     </li>
   {% endfor %}
 </ul>
