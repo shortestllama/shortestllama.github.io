@@ -1,17 +1,12 @@
 title: Jack Ford
 
 collections:
-  authors:
+  writeups:
     output: true
   personal:
     output: true
 
 defaults:
-  - scope:
-      path: ""
-      type: "authors"
-    values:
-      layout: "author"
   - scope:
       path: ""
       type: "posts"
@@ -22,6 +17,11 @@ defaults:
       type: "personal"
     values:
       layout: "personal"
+  - scope:
+      path: ""
+      type: "writeups"
+    values:
+      layout: "writeups"
   - scope:
       path: ""
     values:

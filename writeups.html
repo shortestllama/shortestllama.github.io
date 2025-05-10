@@ -1,0 +1,13 @@
+---
+layout: default
+title: Writeups
+---
+<h1>CTF Writeups</h1>
+
+<ul>
+  {% for item in site.writeups %}
+    <li>
+      <h2><a href="{{ item.url }}">{{ item.title }}</a></h2>
+    </li>
+  {% endfor %}
+</ul>

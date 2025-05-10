@@ -67,3 +67,14 @@ nav a:hover {
   color: $honolulu-blue;
   text-decoration: underline;
 }
+
+pre code {
+  display: block;
+  background-color: #f5f5f5; // light gray
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 1em;
+  font-family: monospace;
+  white-space: pre-wrap; // wraps long lines
+  overflow-x: auto;
+}
