@@ -1,39 +1,62 @@
 @import "variables";
-/* Highlight active nav link */
-.current {
-  color: $honolulu-blue;
-  font-weight: bold;
-}
 
-/* Layout */
+/*==========================
+  BASE STYLES
+==========================*/
 body, html {
   margin: 0;
   padding: 0;
   font-family: sans-serif;
-  background-color: $white;
-  color: $black;
+  background-color: var(--bg);
+  color: var(--text);
 }
 
 body.light-mode {
-  background-color: $white;
-  color: $black;
+  --primary: #{$black};
+  --secondary: #{$honolulu-blue};
+  --tertiary: #{$silver};
+
+  --bg: #{$white};
+  --text: var(--primary);
 }
 
 body.dark-mode {
-  background-color: $black;
-  color: $white;
+  --primary: #{$black};
+  --secondary: #{$silver};
+  --tertiary: #{$honolulu-blue};
+
+  --bg: #{$black};
+  --text: var(--secondary);
 }
 
+span {
+  color: var(--tertiary);
+  font-size: 14px;
+}
+
+a {
+  color: var(--secondary);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: none;
+    color: var(--primary);
+  }
+}
+
+/*==========================
+  LAYOUT
+==========================*/
 .wrapper {
   display: flex;
   min-height: 100vh;
 }
 
 .sidebar {
-  width: 100px;
-  background-color: $silver;
-  color: $black;
-  padding: 20px;
+  width: 120px;
+  background-color: var(--secondary);
+  color: var(--tertiary);
+  padding: 20px 10px;
   position: fixed;
   top: 0;
   bottom: 0;
@@ -41,23 +64,45 @@ body.dark-mode {
   overflow-y: auto;
 }
 
-.sidebar h3 a {
-  color: $honolulu-blue;
-  text-decoration: none;
-
-  &:hover {
-    color: $honolulu-blue;
-    text-decoration: none;
-  }
-}
-
 .content {
-  margin-left: 240px;
+  margin-left: 140px;
   padding: 20px;
   flex: 1;
 }
 
-/* Nav styles */
+.profile {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.profile-text {
+  flex: 1;
+  padding-right: 2rem;
+}
+
+.profile-image img {
+  border-radius: 20px;
+}
+
+/*==========================
+  TYPOGRAPHY
+==========================*/
+h1, h2, h3 {
+  color: var(--secondary);
+  border-bottom: 2px solid var(--tertiary);
+  padding-bottom: 6px;
+  margin-top: 30px;
+}
+
+.current {
+  color: var(--tertiary);
+  font-weight: bold;
+}
+
+/*==========================
+  NAVIGATION
+==========================*/
 nav ul {
   list-style: none;
   padding: 0;
@@ -69,26 +114,177 @@ nav li {
 }
 
 nav a {
+  color: var(--tertiary);
   text-decoration: none;
-  color: $black;
+  font-weight: bold;
+
+  &:hover {
+    color: var(--tertiary);
+    text-decoration: none;
+  }
 }
 
-nav a:hover {
-  color: $honolulu-blue;
-  text-decoration: underline;
+.sidebar h3 a {
+  color: var(--tertiary);
+  text-decoration: none;
+
+  &:hover {
+    color: var(--tertiary);
+  }
 }
 
-pre code {
+/*==========================
+  INTERACTIVE BUBBLE LISTS
+==========================*/
+ul.bubble-list {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+
+  li {
+    margin-bottom: 16px;
+
+    a {
+      display: block;
+      background-color: var(--tertiary);
+      border-left: 6px solid var(--secondary);
+      padding: 14px 20px;
+      border-radius: 12px;
+      color: var(--primary);
+      font-weight: 600;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      position: relative;
+
+      &:hover {
+        background-color: var(--secondary);
+        color: var(--tertiary);
+        transform: scale(1.02) translateX(4px);
+      }
+    }
+  }
+}
+
+/*==========================
+  STATIC FLAT LISTS
+==========================*/
+ul.flat-list {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+
+  li {
+    background-color: var(--tertiary);
+    color: var(--primary);
+    margin-bottom: 10px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-weight: 500;
+  }
+}
+
+/*==========================
+  CODE BLOCKS
+==========================*/
+body.light-mode pre code {
   display: block;
-  background-color: #f5f5f5; // light gray
+  background-color: #f5f5f5;
+  color: $black;
   border: 1px solid #ccc;
   border-radius: 4px;
   padding: 1em;
   font-family: monospace;
-  white-space: pre-wrap; // wraps long lines
+  white-space: pre-wrap;
   overflow-x: auto;
 }
 
-span {
-  color: $silver;
+body.dark-mode pre code {
+  display: block;
+  background-color: #1e1e1e;
+  color: #f8f8f2;
+  border: 1px solid #444;
+  border-radius: 4px;
+  padding: 1em;
+  font-family: monospace;
+  white-space: pre-wrap;
+  overflow-x: auto;
 }
+
+/*==========================
+  COMPONENTS
+==========================*/
+.github-button {
+  display: inline-flex;
+  align-items: center;
+  background-color: var(--secondary);
+  color: var(--tertiary);
+  padding: 10px 16px;
+  border: 2px solid var(--secondary);
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 16px;
+  gap: 8px;
+  transition: background-color 0.3s ease;
+
+  img {
+    display: block;
+  }
+
+  &:hover {
+    background-color: var(--primary);
+  }
+}
+
+/*==========================
+  UTILITIES
+==========================*/
+.bg-primary {
+  background-color: var(--primary);
+  color: var(--tertiary);
+}
+
+.bg-secondary {
+  background-color: var(--secondary);
+  color: var(--primary);
+}
+
+.bg-tertiary {
+  background-color: var(--tertiary);
+  color: var(--primary);
+}
+
+/*==========================
+  THEME
+==========================*/
+.theme-toggle {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  font-family: monospace;
+  background-color: transparent;
+  padding: 5px 10px;
+  border: 1px solid currentColor;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.light-mode .theme-toggle {
+  color: var(--primary);
+}
+
+.light-mode .theme-toggle:hover {
+  background-color: var(--primary);
+  color: var(--tertiary);
+}
+
+.dark-mode .theme-toggle {
+  color: var(--tertiary);
+}
+
+.dark-mode .theme-toggle:hover {
+  background-color: var(--tertiary);
+  color: var(--primary);
+}
+

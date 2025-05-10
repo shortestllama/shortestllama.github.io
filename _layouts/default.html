@@ -15,17 +15,21 @@
       </main>
     </div>
     <script>
+      // Apply saved theme on load
+      (function () {
+        const savedTheme = localStorage.getItem("theme") || "light-mode";
+        document.body.classList.add(savedTheme);
+      })();
+
+      // Set up toggle logic
       document.addEventListener("DOMContentLoaded", function () {
         const toggle = document.getElementById("toggle-theme");
         toggle.addEventListener("click", function () {
           const body = document.body;
-          if (body.classList.contains("dark-mode")) {
-            body.classList.remove("dark-mode");
-            body.classList.add("light-mode");
-          } else {
-            body.classList.remove("light-mode");
-            body.classList.add("dark-mode");
-          }
+          const newTheme = body.classList.contains("dark-mode") ? "light-mode" : "dark-mode";
+          body.classList.remove("light-mode", "dark-mode");
+          body.classList.add(newTheme);
+          localStorage.setItem("theme", newTheme);
         });
       });
     </script>
