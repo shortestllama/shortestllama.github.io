@@ -1,0 +1,22 @@
+---
+layout: default
+title: Login Portal
+permalink: /flags/batcomputer
+---
+{% include found.html num=1 %}
+<h1>Batcomputer Login</h1>
+<p>Access to this page requires authentication.</p>
+
+<form id="login-form">
+  <label>Username:</label><br>
+  <input type="text" id="username" required /><br><br>
+
+  <label>Password:</label><br>
+  <input type="password" id="password" /><br><br>
+
+  <button type="submit">Login</button>
+</form>
+
+<p id="error" style="color: red; display: none;">Invalid credentials.</p>
+
+{% include js.html src="/assets/js/web.js" %}

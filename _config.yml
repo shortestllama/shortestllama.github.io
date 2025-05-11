@@ -7,6 +7,8 @@ collections:
     output: true
   personal:
     output: true
+  flags:
+    output: true
 
 defaults:
   - scope:

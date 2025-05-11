@@ -1,0 +1,30 @@
+---
+layout: default
+title: Flags
+---
+<h1>Flag Submissions</h1>
+<div id="flag-count">0/5 Flags Found</div>
+<span>Submit your flags here to track your challenge progress!</span>
+
+<div style="margin-top: 3rem;">
+  <button onclick="resetFlags()" style="
+    background: #ff4444;
+    color: white;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  ">Reset All Progress</button>
+</div>
+
+<script>
+function resetFlags() {
+  localStorage.clear();
+  sessionStorage.clear();
+  location.reload();
+}
+</script>
+
+<div id="flags-container"></div>
+
+{% include js.html src="/assets/js/flags.js" %}

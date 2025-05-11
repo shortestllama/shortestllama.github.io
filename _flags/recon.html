@@ -1,0 +1,157 @@
+---
+layout: none
+permalink: /flags/riddler
+---
+{% include found.html num=2 %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Jack Ford Terminal</title>
+  <style>
+    :root {
+      --terminal-bg: #000000;
+      --terminal-fg: #33ff33;
+      --terminal-caret: #33ff33;
+      --terminal-selection: rgba(51, 255, 51, 0.3);
+    }
+
+    body {
+      margin: 0;
+      background: var(--terminal-bg);
+      color: var(--terminal-fg);
+      font-family: 'Menlo', 'Consolas', 'Liberation Mono', 'Courier New', monospace;
+      font-size: 16px;
+    }
+
+    #terminal {
+      padding: 1rem;
+      height: 100vh;
+      overflow-y: scroll;
+      white-space: pre-wrap;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .line {
+      display: flex;
+      flex-wrap: wrap;
+    }
+
+    .prompt-prefix {
+      margin-right: 0.5ch;
+    }
+
+    .input-line {
+      display: flex;
+      flex-wrap: wrap;
+    }
+
+    .input-area {
+      outline: none;
+      border: none;
+      background: transparent;
+      color: inherit;
+      font: inherit;
+      caret-color: var(--terminal-caret);
+      flex-grow: 1;
+    }
+
+    ::selection {
+      background: var(--terminal-selection);
+    }
+  </style>
+</head>
+<body>
+  <div id="terminal">
+    <div class="line">jack@ford:~$ [+] jackford.dev node initialized</div>
+    <div class="line">jack@ford:~$ Type 'enter' to continue, or run a command...</div>
+    <div class="input-line">
+      <span class="prompt-prefix">jack@ford:~$</span>
+      <span class="input-area" contenteditable="true" spellcheck="false"></span>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const terminal = document.getElementById('terminal');
+      const inputArea = document.querySelector('.input-area');
+      let knockSequence = [];
+      const correctSequence = ['8080', '9001', '1337'];
+
+      function appendOutput(text) {
+        const line = document.createElement('div');
+        line.className = 'line';
+        line.innerHTML = `<span class="prompt-prefix">jack@ford:~$</span>${text}`;
+        terminal.insertBefore(line, terminal.lastElementChild);
+      }
+
+      function addPrompt() {
+        const newLine = document.createElement('div');
+        newLine.className = 'input-line';
+        newLine.innerHTML = `
+          <span class="prompt-prefix">jack@ford:~$</span>
+          <span class="input-area" contenteditable="true" spellcheck="false"></span>
+        `;
+        terminal.appendChild(newLine);
+        const newInput = newLine.querySelector('.input-area');
+        newInput.focus();
+        setupInputHandler(newInput);
+        terminal.scrollTop = terminal.scrollHeight;
+      }
+
+      function setupInputHandler(input) {
+        input.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            const val = input.textContent.trim();
+            input.contentEditable = "false";
+            processCommand(val);
+            addPrompt();
+          }
+        });
+      }
+
+      function processCommand(val) {
+        appendOutput(val);
+        if (val === 'enter') {
+          appendOutput('Loading main site...');
+          window.location.href = '/index.html';
+        } else if (val === 'help') {
+          appendOutput('Available commands: help, ls, cd <section>, whoami, cat <file>, knock <port>');
+        } else if (val === 'ls') {
+          appendOutput('writeups/  resume/  personal/  blog/');
+        } else if (val.startsWith('cd ')) {
+          const section = val.split(' ')[1];
+          appendOutput(`Changed directory to /${section}/`);
+        } else if (val === 'whoami') {
+          appendOutput('Jack Ford – Reverse Engineer, Lions Fan');
+        } else if (val.startsWith('cat ')) {
+          const file = val.split(' ')[1];
+          if (file === 'det-hq.txt') {
+            appendOutput('Accessing DET-HQ...\nflag{you_found_the_hidden_node}');
+          } else {
+            appendOutput(`cat: ${file}: No such file`);
+          }
+        } else if (val.startsWith('knock ')) {
+          const port = val.split(' ')[1];
+          knockSequence.push(port);
+          if (knockSequence.length > 3) knockSequence.shift();
+          if (JSON.stringify(knockSequence) === JSON.stringify(correctSequence)) {
+            appendOutput('Port sequence accepted. Welcome, operative.');
+            appendOutput('flag{port_knocking_master}');
+          } else {
+            appendOutput(`Knocked on port ${port}`);
+          }
+        } else {
+          appendOutput(`Command not found: ${val}`);
+        }
+      }
+
+      setupInputHandler(inputArea);
+    });
+  </script>
+</body>
+</html>
