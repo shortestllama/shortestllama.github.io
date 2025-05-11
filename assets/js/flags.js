@@ -157,7 +157,7 @@ function getTitle(i) {
   const titles = {
     1: "Web/Venom",
     2: "Recon/Whoami",
-    3: "Rev/Two-Face",
+    3: "Rev/Arkham Encrypted",
     // future titles here
   };
   return titles[i];

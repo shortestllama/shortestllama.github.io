@@ -5,7 +5,7 @@ const memory = [
   42,              // %d
   -13,             // %i
   1337,            // %u
-  "/flags/two-face",// %s
+  "/flags/arkham",// %s
   0123,            // %o
   65,              // %c ('A')
   { addr: 0, ref: "n1" }, // %n → reference to output length
