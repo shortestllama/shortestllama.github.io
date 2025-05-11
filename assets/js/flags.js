@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  document.getElementById("flag-count").textContent = `${found}/${totalFlags} flags found`;
+  document.getElementById("flag-count").textContent = `${found}/${totalFlags} Flags Found`;
 });
 
 function makeFlagCard(i) {
@@ -19,7 +19,7 @@ function makeFlagCard(i) {
 
   const title = document.createElement("div");
   title.className = "flag-title";
-  title.textContent = `Flag ${i} Challenge`;
+  title.textContent = getTitle(i);
   card.appendChild(title);
 
   const solved = localStorage.getItem(`flag${i}_solved`) === "true";
@@ -153,6 +153,16 @@ function makeSolvedDisplay(flagText) {
   return container;
 }
 
+function getTitle(i) {
+  const titles = {
+    1: "Web/Venom",
+    2: "Recon/Whoami",
+    3: "Rev/Two-Face",
+    // future titles here
+  };
+  return titles[i];
+}
+
 function getDescription(i) {
   const descriptions = {
     1: "Little Timmy's ESP32-C6 Zigbee firmware hides the flag. Can you reverse it?",
@@ -166,7 +176,7 @@ function getDescription(i) {
 
 function getHint(i) {
   const hints = {
-    1: "Try Ghidra or IDA on the ELF binary — look for string references to 'shared_string'.",
+    1: "Venom isn’t effective unless it reaches the right place. Can you do the same with your input?",
     2: "Search the site for elements that look like command prompts.",
     3: "ROT13 then base64-decode... or is it the other way around?",
     4: "Inspect image metadata or check CSS background URLs.",
@@ -178,7 +188,8 @@ function getHint(i) {
 function getFlag(i) {
   const flags = {
     1: "gotham{C0mput3r_4n41y5i5}", //web
-    2: "gotham{3l_r4t4_414d4}", //recon
+    2: "gotham{31_r4t4_414d4}", //recon
+    3: "gotham{Gr4nt_M0rri50n}", //reverse
     // future flags here
   };
   return flags[i];

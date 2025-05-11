@@ -1,1 +1,7 @@
+{% if include.raw %}
+  <div class="code-box">
+    {{ include.code }}
+  </div>
+{% else %}
 <pre class="wp-block-code"><code class="language-{{ include.lang | default: 'bash' }}">{{ include.code | escape }}</code></pre>
+{% endif %}
