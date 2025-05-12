@@ -1,3 +1,4 @@
+
 @import "variables";
 
 /*==========================
@@ -6,27 +7,36 @@
 body, html {
   margin: 0;
   padding: 0;
-  font-family: sans-serif;
+  font-family: 'Courier New', monospace;
   background-color: var(--bg);
   color: var(--text);
 }
 
-body.light-mode {
+body.home {
+  --primary: #{$honolulu-blue};
+  --secondary: #{$silver};
+  --tertiary: #{$white};
+  --quaternary: #{$black};
+  --bg: var(--primary);
+  --text: var(--secondary);
+}
+
+body.away {
+  --primary: #{$white};
+  --secondary: #{$honolulu-blue};
+  --tertiary: #{$silver};
+  --quaternary: #{$black};
+  --bg: var(--primary);
+  --text: var(--secondary);
+}
+
+body.alternate {
   --primary: #{$black};
   --secondary: #{$honolulu-blue};
   --tertiary: #{$silver};
-
-  --bg: #{$white};
-  --text: var(--primary);
-}
-
-body.dark-mode {
-  --primary: #{$black};
-  --secondary: #{$silver};
-  --tertiary: #{$honolulu-blue};
-
-  --bg: #{$black};
-  --text: var(--secondary);
+  --quaternary: #{$white};
+  --bg: var(--primary);
+  --text: var(--tertiary);
 }
 
 span {
@@ -39,8 +49,8 @@ a {
   text-decoration: none;
 
   &:hover {
-    text-decoration: none;
     color: var(--primary);
+    text-decoration: none;
   }
 }
 
@@ -79,6 +89,7 @@ a {
 .profile-text {
   flex: 1;
   padding-right: 2rem;
+  color: var(--secondary);
 }
 
 .profile-image img {
@@ -90,14 +101,33 @@ a {
 ==========================*/
 h1, h2, h3 {
   color: var(--secondary);
-  border-bottom: 2px solid var(--tertiary);
   padding-bottom: 6px;
   margin-top: 30px;
 }
 
+.content > h1,
+.content > h2,
+.content > h3 {
+  border-bottom: 2px solid var(--tertiary);
+}
+
+.profile-text > h1,
+.profile-text > h2,
+.profile-text > h3 {
+  border-bottom: 2px solid var(--tertiary);
+}
+
+p, li {
+  color: var(--secondary);
+}
+
 .current {
+  background-color: var(--primary);
   color: var(--tertiary);
   font-weight: bold;
+  border-radius: 12px;
+  padding: 10px 14px;
+  display: block;
 }
 
 /*==========================
@@ -114,22 +144,34 @@ nav li {
 }
 
 nav a {
+  background-color: var(--tertiary);
+  border-radius: 12px;
+  padding: 10px 14px;
+  display: block;
+  font-weight: bold;
+  color: var(--primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+  text-decoration: none;
+}
+
+nav a:hover {
+  background-color: var(--primary);
   color: var(--tertiary);
   text-decoration: none;
-  font-weight: bold;
-
-  &:hover {
-    color: var(--tertiary);
-    text-decoration: none;
-  }
 }
 
 .sidebar h3 a {
   color: var(--tertiary);
   text-decoration: none;
+  background: none;
+  padding: 0;
+  border-radius: 0;
+  display: inline;
+  font-weight: bold;
 
   &:hover {
-    color: var(--tertiary);
+    color: var(--primary);
+    background: none;
   }
 }
 
@@ -144,10 +186,9 @@ ul.bubble-list {
   li {
     margin-bottom: 16px;
 
-    a {
+    h2 a {
       display: block;
       background-color: var(--tertiary);
-      border-left: 6px solid var(--secondary);
       padding: 14px 20px;
       border-radius: 12px;
       color: var(--primary);
@@ -155,12 +196,16 @@ ul.bubble-list {
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
       transition: background-color 0.3s ease, transform 0.2s ease;
       position: relative;
+      border: none;
+      text-decoration: none;
+      border-bottom: none;
+    }
 
-      &:hover {
-        background-color: var(--secondary);
-        color: var(--tertiary);
-        transform: scale(1.02) translateX(4px);
-      }
+    h2 a:hover {
+      background-color: var(--secondary);
+      color: var(--primary);
+      transform: scale(1.02);
+      text-decoration: none;
     }
   }
 }
@@ -186,19 +231,9 @@ ul.flat-list {
 /*==========================
   CODE BLOCKS
 ==========================*/
-body.light-mode pre code {
-  display: block;
-  background-color: #f5f5f5;
-  color: $black;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  padding: 1em;
-  font-family: monospace;
-  white-space: pre-wrap;
-  overflow-x: auto;
-}
-
-body.dark-mode pre code {
+body.home pre code,
+body.away pre code,
+body.alternate pre code {
   display: block;
   background-color: #1e1e1e;
   color: #f8f8f2;
@@ -232,7 +267,8 @@ body.dark-mode pre code {
   }
 
   &:hover {
-    background-color: var(--primary);
+    background-color: var(--secondary);
+    color: var(--primary);
   }
 }
 
@@ -255,7 +291,7 @@ body.dark-mode pre code {
 }
 
 /*==========================
-  THEME
+  THEME TOGGLE BUTTON
 ==========================*/
 .theme-toggle {
   position: absolute;
@@ -264,53 +300,21 @@ body.dark-mode pre code {
   font-family: monospace;
   background-color: transparent;
   padding: 5px 10px;
-  border: 1px solid currentColor;
+  border: none;
   border-radius: 4px;
   cursor: pointer;
+  color: var(--tertiary);
   transition: background-color 0.3s, color 0.3s;
-}
 
-.light-mode .theme-toggle {
-  color: var(--primary);
-}
-
-.light-mode .theme-toggle:hover {
-  background-color: var(--primary);
-  color: var(--tertiary);
-}
-
-.dark-mode .theme-toggle {
-  color: var(--tertiary);
-}
-
-.dark-mode .theme-toggle:hover {
-  background-color: var(--tertiary);
-  color: var(--primary);
-}
-
-body {
-  background-color: #000;
-  color: #B0B7BC;
-  font-family: 'Courier New', monospace;
-}
-
-a {
-  color: #0076B6;
-  text-decoration: none;
-}
-
-#terminal {
-  max-width: 80ch;
-  margin: auto;
-  padding: 2rem;
-  background-color: #111;
-  border-radius: 8px;
+  &:hover {
+    color: var(--primary);
+    text-decoration: none;
+  }
 }
 
 /*==========================
   FLAGS PAGE STYLES
 ==========================*/
-
 #flag-count {
   font-weight: bold;
   font-size: 22px;
@@ -396,3 +400,4 @@ a {
   from { opacity: 0; transform: scale(0.98); }
   to { opacity: 1; transform: scale(1); }
 }
+
