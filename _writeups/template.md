@@ -1,6 +1,6 @@
 ---
-title: exatlon_v1
 layout: writeup
+title: exatlon_v1
 source: HackTheBox
 date: 2025-01-01
 read_time: 5 mins
