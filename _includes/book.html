@@ -1,0 +1,16 @@
+<div class="book-entry">
+  <div class="book-cover">
+    <img src="{{ include.book.image }}" alt="{{ include.book.title }} cover">
+  </div>
+  <div class="book-info">
+    <h2 class="book-title">{{ include.book.title }}</h2>
+    <p class="book-meta">
+      <strong>Author:</strong> {{ include.book.author }}<br>
+      <strong>Rating:</strong> {{ include.book.rating }} / 5<br>
+      <strong>Genre:</strong> {{ include.book.genre }}
+    </p>
+    <div class="book-content">
+      {{ include.book.content }}
+    </div>
+  </div>
+</div>

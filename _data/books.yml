@@ -1,0 +1,22 @@
+- title: Boy's Life
+  author: Robert McCammon
+  rating: 5
+  genre: Mystery / Fiction
+  image:
+  content: >
+    My favorite book of all time is "Boy's Life" by Robert McCammon.
+- title: Batman The Long Halloween
+  author: Jeph Loeb & Tim Sale
+  rating: 5
+  genre: Mystery / Detective
+  image: /assets/books/long-halloween.jpg
+  content: >
+    A gripping noir-style mystery that explores Gotham’s criminal underworld and Batman’s early detective roots.
+
+- title: Batman Dark Victory
+  author: Jeph Loeb & Tim Sale
+  rating: 4
+  genre: Crime / Sequel
+  image: /assets/books/dark-victory.jpg
+  content: >
+    A strong follow-up to The Long Halloween that wraps up threads and introduces key characters like Robin.

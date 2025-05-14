@@ -1,0 +1,10 @@
+---
+layout: default
+title: Books
+---
+<h1>Book Reviews</h1>
+<div class="book-list">
+  {% for book in site.data.books %}
+    {% include book.html book=book %}
+  {% endfor %}
+</div>
