@@ -8,7 +8,7 @@
     {% feed_meta %}
     {% seo %}
   </head>
-  <body>
+  <body class="{{ page.body_class | default: '' }}">
     <div class="wrapper">
       {% include navigation.html %}
       <main class="content">

@@ -431,15 +431,3 @@ body.alternate pre code {
     font-family: monospace;
   }
 }
-
-.page-content, .wrapper, .post, main {
-    margin: 0 !important;
-    padding: 0 !important;
-    max-width: 100% !important;
-  }
-
-  iframe {
-    display: block;
-    width: 100vw;
-    height: 100vh;
-  }
