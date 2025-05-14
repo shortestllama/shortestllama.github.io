@@ -2,4 +2,4 @@ Gemfile.lock
 _site/
 *~
 *.un~
-.sass-cache/
+.sass-cache/*

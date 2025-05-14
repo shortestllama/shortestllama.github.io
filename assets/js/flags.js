@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  document.getElementById("flag-count").textContent = `${found}/${totalFlags} Flags Found`;
+  document.getElementById("flag-count").textContent = `${found}/${totalFlags} Challenges Found`;
 });
 
 function makeFlagCard(i) {
@@ -158,6 +158,7 @@ function getTitle(i) {
     1: "Web/Venom",
     2: "Recon/Whoami",
     3: "Rev/Arkham Encrypted",
+    4: "Forensics/Criminal Investigator",
     // future titles here
   };
   return titles[i];
@@ -190,6 +191,7 @@ function getFlag(i) {
     1: "gotham{C0mput3r_4n41y5i5}", //web
     2: "gotham{31_r4t4_414d4}", //recon
     3: "gotham{Gr4nt_M0rri50n}", //reverse
+    4: "gotham{why_50_53ri0u5}", //forensics
     // future flags here
   };
   return flags[i];

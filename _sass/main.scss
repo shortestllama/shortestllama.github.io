@@ -49,7 +49,7 @@ a {
   text-decoration: none;
 
   &:hover {
-    color: var(--primary);
+    color: var(--quaternary);
     text-decoration: none;
   }
 }
@@ -401,3 +401,45 @@ body.alternate pre code {
   to { opacity: 1; transform: scale(1); }
 }
 
+.batman {
+  width: 24px;
+  height: 12px;
+}
+
+.code-box {
+  display: flex;
+  align-items: center;
+  gap: 1rem; // space between image and input
+  padding: 1rem;
+  background: #1c1c1c;
+  border: 1px solid #444;
+  border-radius: 6px;
+  color: #fff;
+
+  input#fmt-input {
+    width: 100%;
+    padding: 0.5rem;
+    background: $white;
+    color: $black;
+    border: 1px solid #333;
+    font-family: monospace;
+  }
+
+  #fmt-output {
+    margin-top: 0.5rem;
+    color: #00aa00;
+    font-family: monospace;
+  }
+}
+
+.page-content, .wrapper, .post, main {
+    margin: 0 !important;
+    padding: 0 !important;
+    max-width: 100% !important;
+  }
+
+  iframe {
+    display: block;
+    width: 100vw;
+    height: 100vh;
+  }

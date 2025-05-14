@@ -1,0 +1,6 @@
+{% if include.raw %}
+  <div class="code-box">
+    <img src="/assets/images/batman-icon.svg" class="batman"> {{ include.clue }}
+  </div>
+{% else %}
+<pre class="wp-block-code"><code class="language-{{ include.lang | default: 'bash' }}"><img src="/assets/images/batman-icon.svg" class="batman"> {{ include.clue | escape }}</code></pre>{% endif %}
