@@ -72,6 +72,13 @@ function makeFlagCard(i) {
   const input = document.createElement("input");
   input.placeholder = "Enter flag...";
 
+  input.addEventListener("keydown", function(e) {
+    if (e.key === "Enter") {
+      e.preventDefault(); // prevent form submission or newline
+      button.click();     // trigger the same logic as clicking the button
+    }
+  });
+
   const button = document.createElement("button");
   button.textContent = "Submit";
 
@@ -159,6 +166,7 @@ function getTitle(i) {
     2: "Recon/Whoami",
     3: "Rev/Arkham Encrypted",
     4: "Forensics/Criminal Investigator",
+    5: "Pwn/idk",
     // future titles here
   };
   return titles[i];
@@ -191,7 +199,8 @@ function getFlag(i) {
     1: "gotham{C0mput3r_4n41y5i5}", //web
     2: "gotham{31_r4t4_414d4}", //recon
     3: "gotham{Gr4nt_M0rri50n}", //reverse
-    4: "gotham{why_50_53ri0u5}", //forensics
+    4: "gotham{Why_50_53ri0u5}", //forensics
+    5: "gotham{pwn}", //pwn
     // future flags here
   };
   return flags[i];

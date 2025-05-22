@@ -2,10 +2,12 @@
 layout: default
 title: Writeups
 ---
+{% assign sorted_writeups = site.writeups | sort: "date" | reverse %}
+
 <h1>CTF Writeups</h1>
 
 <ul class="bubble-list">
-  {% for writeup in site.writeups %}
+  {% for writeup in sorted_writeups %}
     <li>
       <h2><a href="{{ writeup.url }}">{{ writeup.title }}</a></h2>
       <span>{{ writeup.source }}</span> -
