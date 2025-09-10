@@ -5,3 +5,5 @@ _site/
 .sass-cache/*
 .DS_Store
 *.DS_Store
+.obsidian
+.gdb_history
