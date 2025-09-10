@@ -35,6 +35,6 @@ This all leads me to some more dynamic analysis - this time with the help of gdb
 I locate the assembly code for the set_field function and discover the address that stores the data I input, aptly named DataStore. I examine the memory contents of this address after entering "A" as my string input to find that a newline character has been appended.
 ![[DataStore_gdb.png]]
 This gives me enough new information to formulate a hypothesis and come up with an experiment to test this hypothesis.
-![]({{ "assets/images/Writeups/HackTheBox/Entity/just_A.png" | relative_url }} )
+![](/assets/images/writeups/HackTheBox/Entity/just_A.png)
 My experiment begins with running the code again, entering just a single "A" (as I did in gdb) in order to figure out what the integer representation would be according to the program.
 I know there's no funny business since I didn't find any encoding functions or other cryptographic algorithms that might change the string into non-ASCII, so I consult my favorite format conversion website: !(RapidTables)[https://www.rapidtables.com/convert/number/hex-to-decimal.html?x=A41]. 

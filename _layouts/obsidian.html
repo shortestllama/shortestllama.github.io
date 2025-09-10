@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="{{ page.lang | default: site.lang | default: " en" }}">
+
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/he@latest/he.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.2.3/purify.min.js"></script>
+    <script src=" https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js "></script>
+    <link rel="stylesheet" href="{{ '/assets/obsidian/obsidian.css' | relative_url }}">
+    <style>
+        .page-content {
+            display: flex;
+            height: 100%;
+            padding: 0 !important;
+            max-height: 100vh;
+        }
+    </style>
+</head>
+
+{%- include head.html -%}
+
+<body>
+    {%- include header.html -%}
+
+    <main class="page-content" aria-label="Content">
+        <div id="loading-spinner"></div>
+        <div id="obsidian" style="display: none;">
+            <div id="sidebar">
+                {% include obsidian/sidebar.html -%}
+                {%- include obsidian/modals.html -%}
+            </div>
+            <div id="explorer">
+                {% include obsidian/explorer.html %}
+            </div>
+            <div id="divider"></div>
+            <div id="fileread">
+                <ul id="breadcrumb"> </ul>
+                {% include obsidian/fileread.html %}
+                <div id="notes">
+                    <div id="note" style="display: flex;">
+                        {% include obsidian/note.html %}
+                    </div>
+                </div>
+                <div id="canvas" style="display: none;">
+                    {% include obsidian/canvas.html %}
+                </div>
+            </div>
+    </main>
+    <!-- {%- include footer.html -%} -->
+</body>
+
+<!-- ----------------------- Constants initilization ----------------------- -->
+<script>
+    // ! ELEMENT SELECTORS
+    const OBSIDIAN = document.getElementById('obsidian');
+
+    const SIDEBAR = OBSIDIAN.querySelector('#sidebar');
+
+    const DIVIDER = OBSIDIAN.querySelector("#divider");
+
+    const MODALS = OBSIDIAN.querySelector('#modals');
+    const mediaModal = MODALS.querySelector('#media-modal');
+    const media = mediaModal.querySelector("#media");
+    const mediaData = mediaModal.querySelector("#media-data");
+
+    const FILEREAD = OBSIDIAN.querySelector('#fileread');
+    const NOTE = FILEREAD.querySelector('#note');
+    const CANVAS = FILEREAD.querySelector('#canvas');
+
+    // ! GLOBAL CONSTS
+    const minWidth = 10; const maxWidth = 50;
+    const minPadding = 3.5; const maxPadding = 23;
+</script>
+
+<!-- -------------------------- Utility functions -------------------------- -->
+<script>
+    // Linear mapping function
+    function linearMapInRange(value, x1, y1, x2, y2) {
+        return (value - x1) * (y2 - x2) / (y1 - x1) + x2;
+    }
+</script>
+
+<!-- ------------------------ Divider drag handler ------------------------- -->
+<script>
+    let isDraggingDivider = false;
+    let startX, startWidth;
+
+    DIVIDER.addEventListener('mousedown', (e) => {
+        EXPLORER = OBSIDIAN.querySelector('#explorer');
+        isDraggingDivider = true;
+        startX = e.clientX;
+        startWidth = EXPLORER.getBoundingClientRect().width;
+        document.addEventListener('mousemove', onMouseMove);
+        document.addEventListener('mouseup', onMouseUp);
+    });
+
+    function onMouseMove(e) {
+        if (!isDraggingDivider) return;
+        let offset = e.clientX - startX;
+        let newWidthPx = startWidth + offset;
+        let newWidthPercent = newWidthPx / window.innerWidth * 100;
+        newWidthPercent = Math.max(minWidth, Math.min(newWidthPercent, maxWidth));
+        EXPLORER.style.width = `${newWidthPercent}%`;
+        updateNotePadding(newWidthPercent);
+    }
+
+    function onMouseUp() {
+        isDraggingDivider = false;
+        document.removeEventListener('mousemove', onMouseMove);
+        document.removeEventListener('mouseup', onMouseUp);
+    }
+</script>
+
+<!-- --------------------------- On content load --------------------------- -->
+<script>
+    let EXPLORER = OBSIDIAN.querySelector('#explorer');
+    window.addEventListener('resize', function () { refreshScreenSize(); });
+
+    document.addEventListener('DOMContentLoaded', (event) => {
+        EXPLORER = OBSIDIAN.querySelector('#explorer');
+        refreshScreenSize();
+
+        OBSIDIAN.style.display = '';
+        var loadingDiv = document.getElementById('loading-spinner');
+        loadingDiv.style.display = 'none';
+    });
+
+    function refreshScreenSize() {
+        let explorerWidthPx = parseFloat(getComputedStyle(EXPLORER).width);
+        let parentWidthPx = parseFloat(getComputedStyle(EXPLORER.parentElement).width);
+        let explorerWidthPercent = (explorerWidthPx / parentWidthPx) * 100;
+        updateNotePadding(explorerWidthPercent);
+        if (window.innerWidth < 481) {
+            DIVIDER.style.display = 'none';
+            EXPLORER.style.display = 'none';
+            FILEREAD.style.display = '';
+        } else {
+            DIVIDER.style.display = '';
+            EXPLORER.style.display = '';
+            EXPLORER.style.width = '18%';
+        }
+    }
+</script>
+
+<!-- ------------------------------- Getters ------------------------------- -->
+<script>
+    function getFullFilePath(filePath, trimTrailingPeriod = true) {
+        const VAULTPATH = '{{ site.obsidian_vault | escape }}';
+        if (trimTrailingPeriod)
+            return removeExtraTrailingDotFromFilename(fullFilePath = '/' + VAULTPATH + filePath);
+        else return fullFilePath = '/' + VAULTPATH + filePath;
+    }
+
+    function getFileType(filePath) {
+        const extensionToType = {
+            // Notes
+            'mdj': 'note', 'txt': 'note',
+            // Canvas
+            'canvas': 'canvas',
+            // Images
+            'jpg': 'image', 'jpeg': 'image', 'png': 'image', 'gif': 'image', 'bmp': 'image', 'webp': 'image',
+            // PDFs
+            'pdf': 'pdf',
+            // SVGs
+            'svg': 'svg',
+            // Audios
+            'mp3': 'audio', 'wav': 'audio', 'ogg': 'audio',
+            // Videos
+            'mp4': 'video', 'avi': 'video', 'mov': 'video', 'mkv': 'video', 'webm': 'video',
+        };
+        // Extract the file extension
+        const extension = filePath.split('.').pop().toLowerCase();
+        console.log("extension: ", extension);
+        // Return the file type, defaulting to 'unknown' if the extension is not in the map
+        return extensionToType[extension] || 'unknown';
+    }
+
+    const Icon = {
+        // ------------------------------- sidebar -------------------------------
+        Homepage: "Homepage",
+        Search: "Search",
+        Tags: "Tags",
+        Settings: "Settings",
+        // ------------------------------ explorer -------------------------------
+        RightArrow: "RightArrow",
+        DownArrow: "DownArrow",
+        ChevronExpand: "ChevronExpand",
+        ChevronCollapse: "ChevronCollapse",
+        // ------------------------------ callouts -------------------------------
+        Note: "Note",
+        Info: "Info",
+        Tip: "Tip",
+        Todo: "Todo",
+        Question: "Question",
+        Success: "Success",
+        Failure: "Failure",
+        Warning: "Warning",
+        Example: "Example",
+
+    };
+
+    function getSVGIcon(icon) {
+        switch (icon) {
+            // ------------------------------- sidebar ------------------------------- -->
+            case Icon.Homepage:
+                return `
+                <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="m4 12 8-8 8 8M6 10.5V19a1 1 0 0 0 1 1h3v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h3a1 1 0 0 0 1-1v-8.5" />
+                </svg>`;
+            case Icon.Search:
+                return `
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+                </svg>`;
+            case Icon.Tags:
+                return `
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-tags" viewBox="0 0 16 16">
+                    <path d="M3 2v4.586l7 7L14.586 9l-7-7zM2 2a1 1 0 0 1 1-1h4.586a1 1 0 0 1 .707.293l7 7a1 1 0 0 1 0 1.414l-4.586 4.586a1 1 0 0 1-1.414 0l-7-7A1 1 0 0 1 2 6.586z"/>
+                    <path d="M5.5 5a.5.5 0 1 1 0-1 .5.5 0 0 1 0 1m0 1a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3M1 7.086a1 1 0 0 0 .293.707L8.75 15.25l-.043.043a1 1 0 0 1-1.414 0l-7-7A1 1 0 0 1 0 7.586V3a1 1 0 0 1 1-1z"/>
+                </svg>`;
+            case Icon.Settings:
+                break;
+            // ------------------------------ explorer ------------------------------- -->
+            case Icon.RightArrow:
+                return `
+                <svg class="svg_RightArrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 5 7 7-7 7"/>
+                </svg>`;
+            case Icon.DownArrow:
+                return `
+                <svg class="svg_downArrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m5 9 7 7 7-7"/>
+                </svg>`;
+            case Icon.ChevronExpand:
+                return `
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-expand" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M3.646 9.146a.5.5 0 0 1 .708 0L8 12.793l3.646-3.647a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 0-.708m0-2.292a.5.5 0 0 0 .708 0L8 3.207l3.646 3.647a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 0 0 0 .708"/>
+                </svg>`;
+            case Icon.ChevronCollapse:
+                return `
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-contract" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M3.646 13.854a.5.5 0 0 0 .708 0L8 10.207l3.646 3.647a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 0 0 0 .708m0-11.708a.5.5 0 0 1 .708 0L8 5.793l3.646-3.647a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 0-.708"/>
+                </svg>`;
+            // ------------------------------ callouts -------------------------------
+            case Icon.Note:
+                return `
+                <svg class="svg_Note" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="16 3 21 8 8 21 3 21 3 16 16 3"></polygon>
+                </svg>`;
+            case Icon.Info:
+                return ` 
+                <svg class="svg_Info" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
+                    viewBox="0 0 24 24">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M10 11h2v5m-2 0h4m-2.592-8.5h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                </svg>`;
+            case Icon.Tip:
+                return `
+                <svg class="svg_Tip" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.122 17.645a7.185 7.185 0 0 1-2.656 2.495 7.06 7.06 0 0 1-3.52.853 6.617 6.617 0 0 1-3.306-.718 6.73 6.73 0 0 1-2.54-2.266c-2.672-4.57.287-8.846.887-9.668A4.448 4.448 0 0 0 8.07 6.31 4.49 4.49 0 0 0 7.997 4c1.284.965 6.43 3.258 5.525 10.631 1.496-1.136 2.7-3.046 2.846-6.216 1.43 1.061 3.985 5.462 1.754 9.23Z" />
+                </svg>`;
+            case Icon.Todo:
+                return `
+                <svg class="svg_Todo" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>`;
+            case Icon.Question:
+                return `
+                <svg class="svg_Question" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line>
+                </svg>`;
+            case Icon.Success:
+                return `
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>`;
+            case Icon.Failure:
+                return `
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>`;
+            case Icon.Warning:
+                return `
+                <svg class="svg_Warning" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line>
+                </svg>`;
+                break;
+            case Icon.Example:
+                return `
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line>
+                </svg>`;
+            default:
+                console.error('Invalid icon:', icon);
+        }
+    }</script>
+
+</html>

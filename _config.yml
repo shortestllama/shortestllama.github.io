@@ -1,5 +1,10 @@
 title: Jack Ford
 
+markdown: kramdown
+kramdown:
+  input: GFM
+  hard_wrap: true
+
 collections:
   projects:
     output: true
@@ -36,7 +41,14 @@ defaults:
     values:
       layout: "default"
 
+obsidian:
+  enable_wikilinks: true
+  process_collections: ["writeups"]
+  vault_dir: "."
+  strict: false
+
 plugins:
   - jekyll-feed
   - jekyll-sitemap
   - jekyll-seo-tag
+  - jekyll-obsidian

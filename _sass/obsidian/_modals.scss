@@ -1,0 +1,205 @@
+#obsidian {
+    #modals {
+        >* {
+            border: 0;
+            box-shadow: 0px 0px 50px var(--bg-tinted);
+            border-radius: 1rem;
+            width: 40%;
+            background-color: var(--bg);
+            border: 1px double var(--color-button);
+
+            @media (min-width:320px) {
+                min-width: 80%;
+            }
+
+            @media (min-width:481px) {
+                min-width: 70%;
+            }
+
+            @media (min-width:961px) {
+                min-width: 60%;
+            }
+
+            @media (min-width:1025px) {
+                min-width: 50%;
+            }
+
+            @media (min-width:1281px) {
+                min-width: 40%;
+                max-width: 80%;
+            }
+        }
+
+        >*::backdrop {
+            background-color: light-dark(rgba(200, 200, 200, 0.5),
+                    rgba(50, 50, 50, 0.5));
+            backdrop-filter: blur(2px);
+        }
+
+        >*:popover-open {
+            animation: slideIn 100ms ease-in-out;
+        }
+
+        .modal-close {
+            font-size: x-large;
+            line-height: 0.5em;
+            float: right;
+
+            &:hover {
+                font-weight: bold;
+            }
+        }
+
+        // ---------------------------- Search Modal -----------------------------
+        #search-modal {
+            padding-left: 0;
+            padding-top: 0;
+            height: fit-content;
+            min-height: 25%;
+            max-height: 45%;
+            overscroll-behavior: none;
+
+            #header {
+                display: flex;
+                align-items: center;
+                position: sticky;
+                top: 0;
+                left: 0;
+
+                input[type="text"] {
+                    flex-grow: 1;
+                    margin-right: 10px;
+                    padding: 10px;
+                    border-bottom-right-radius: 0.8rem;
+                    border-top: none;
+                    border-right: 1px solid var(--color-button);
+                    border-bottom: 1px solid var(--color-button);
+                    border-left: none;
+                    background-color: var(--bg);
+                }
+
+                button {
+                    padding: 4px;
+                    font-size: xx-large;
+                    cursor: pointer;
+                    background: none;
+                    border: none;
+                }
+            }
+
+            :popover-open {
+                animation: slideIn 150ms ease-in-out;
+            }
+
+            ul {
+                list-style-type: none;
+                margin-left: 10px;
+
+                li {
+                    margin-top: 4px;
+
+                    button {
+                        font-size: medium;
+                        white-space: nowrap;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        max-width: 100%;
+                        direction: rtl;
+                        text-align: left;
+
+                        &:hover {
+                            background-color: var(--explorer-button-hover);
+                            font-weight: bold;
+                        }
+                    }
+                }
+            }
+        }
+
+        // ----------------------------- Info Modal ------------------------------
+        #info-modal {
+            height: 25%;
+            color: var(--color-text);
+            font-size: large;
+
+            >* {
+                margin-left: 8px;
+            }
+
+            p {
+                margin-top: 2px;
+                margin-bottom: 5px;
+            }
+
+            a:hover {
+                color: #5a8fbb;
+            }
+
+            :popover-open {
+                display: flex;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 1em;
+            }
+
+            >div:first-child {
+                align-self: center;
+            }
+
+            >div:not(:first-child),
+            >button:not(:first-child) {
+                align-self: flex-start;
+            }
+
+            #color-scheme {
+                padding: 5px 10px;
+                background-color: var(--bg);
+                font-size: medium;
+                color: var(--color-text);
+                border-radius: 10px;
+
+                &:focus {
+                    outline: none;
+                }
+
+                option {
+                    background-color: white;
+                }
+            }
+        }
+
+        // ----------------------------- Media Modal -----------------------------
+        #media-modal {
+            width: max-content;
+            height: max-content;
+            max-width: 84%;
+            max-height: 84%;
+
+            #media {
+
+                img,
+                video {
+                    border-radius: .8rem;
+                }
+            }
+
+            #media-data {
+                font-size: small;
+                padding-left: 6px;
+                color: var(--color-text);
+            }
+        }
+    }
+}
+
+@keyframes slideIn {
+    0% {
+        transform: translateX(-40%);
+        opacity: 0;
+    }
+
+    100% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}

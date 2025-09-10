@@ -2,8 +2,11 @@ Gemfile.lock
 _site/
 *~
 *.un~
-.sass-cache/*
+.sass-cache/
 .DS_Store
 *.DS_Store
 .obsidian
 .gdb_history
+.jekyll-cache/
+.jekyll-metadata
+vendor/

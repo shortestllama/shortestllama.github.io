@@ -1,0 +1,403 @@
+<body>
+    <div id="canvas-content"></div>
+</body>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/two.js/0.8.14/two.min.js"></script>
+
+<script>
+    let _scrollLeft = 0; let _scrollTop = 0;
+    var EDGES = null;
+    function loadCanvas(canvasPath) {
+        const fullFilePath = getFullFilePath(canvasPath);
+        generateBreadcrumbs(canvasPath);
+        console.log("fullFilePath Canvas: " + fullFilePath)
+
+        fetch(fullFilePath).then(response => {
+            if (!response.ok)
+                throw new Error('Network response: ' + response.statusText);
+            return response.text();
+        }).then(content => {
+            try {
+                FILEREAD.scrollTop = 0;
+                FILEREAD.scrollLeft = 0;
+                const canvasParsed = JSON.parse(content);
+                if (!canvasParsed.nodes || !Array.isArray(canvasParsed.nodes)) {
+                    console.error('Invalid or missing nodes array');
+                    return;
+                }
+
+                const canvasContent = CANVAS.querySelector('#canvas-content');
+                while (canvasContent.firstChild)
+                    canvasContent.removeChild(canvasContent.firstChild);
+                canvasContent.style.transform = `scale(1)`;
+
+                const nodesKeysList = canvasParsed.nodes.map(node => Object.keys(node));
+
+                const canvasWidth = parseInt(window.getComputedStyle(CANVAS).width);
+
+                const minX = canvasParsed.nodes.reduce((min, node) => Math.min(min, node.x), Infinity);
+                const maxX = canvasParsed.nodes.reduce((max, node) => Math.max(max, node.x), -Infinity);
+                const minY = canvasParsed.nodes.reduce((min, node) => Math.min(min, node.y), Infinity);
+                const maxY = canvasParsed.nodes.reduce((max, node) => Math.max(max, node.y), -Infinity);
+
+                const centerX = (minX + maxX) / 2;
+                const centerY = (minY + maxY) / 2;
+                console.warn(`Center point: (${centerX}, ${centerY})`);
+
+                // <!-- ----------------------------- Draw Edges ------------------------------ -->
+                const svgElement = CANVAS.querySelector('svg');
+                if (svgElement) svgElement.remove();
+                const edgesKeysList = canvasParsed.edges.map(edge => Object.keys(edge))
+                const params = { width: canvasWidth, height: canvasWidth };
+                const two = new Two(params).appendTo(CANVAS);
+                canvasParsed.edges.forEach(edge => {
+                    const fromNode = canvasParsed.nodes.find(node => node.id === edge.fromNode);
+                    const toNode = canvasParsed.nodes.find(node => node.id === edge.toNode);
+
+                    if (fromNode && toNode) {
+                        function getSideOffset(node, offsetX, offsetY, side) {
+                            let sideOffsetX = offsetX;
+                            let sideOffsetY = offsetY;
+                            switch (side) {
+                                case "top":
+                                    sideOffsetY = (offsetY - node.height / 2) + 5; break;
+                                case "bottom":
+                                    sideOffsetY = (offsetY + node.height / 2) - 5; break;
+                                case "right":
+                                    sideOffsetX = (offsetX + node.width / 2) - 5; break;
+                                case "left":
+                                    sideOffsetX = (offsetX - node.width / 2) + 5; break;
+                            }
+                            return { sideOffsetX, sideOffsetY };
+                        }
+
+                        // Calculate common offset values
+                        const offsetXFrom = (-minX) + (canvasWidth / 2) + fromNode.width / 2;
+                        const offsetYFrom = (-minY) + (canvasWidth / 2) + fromNode.height / 2;
+
+                        const offsetXTo = (-minX) + (canvasWidth / 2) + toNode.width / 2;
+                        const offsetYTo = (-minY) + (canvasWidth / 2) + toNode.height / 2;
+
+                        const fromOffsets = getSideOffset(fromNode, offsetXFrom, offsetYFrom, edge.fromSide);
+                        const from_SideOffsetX = fromOffsets.sideOffsetX;
+                        const from_SideOffsetY = fromOffsets.sideOffsetY;
+
+                        const toOffsets = getSideOffset(toNode, offsetXTo, offsetYTo, edge.toSide);
+                        const to_SideOffsetX = toOffsets.sideOffsetX;
+                        const to_SideOffsetY = toOffsets.sideOffsetY;
+
+                        function getControlPointOffset(node, side) {
+                            const controlOffset = 5;
+                            let controlOffsetX = 0;
+                            let controlOffsetY = 0;
+
+                            switch (side) {
+                                case "top":
+                                    controlOffsetY = -controlOffset; break;
+                                case "bottom":
+                                    controlOffsetY = controlOffset; break;
+                                case "right":
+                                    controlOffsetX = controlOffset;
+                                    controlOffsetY = 0; break;
+                                case "left":
+                                    controlOffsetX = -controlOffset;
+                                    controlOffsetY = 0; break;
+                            }
+                            return { controlOffsetX, controlOffsetY };
+                        }
+
+                        // Calculate the start and end offsets based on node side
+                        const fromCurveOffset = getControlPointOffset(fromNode, edge.fromSide);
+                        const toCurveOffset = getControlPointOffset(toNode, edge.toSide);
+
+                        const curve = two.makeCurve(
+                            fromNode.x + from_SideOffsetX,
+                            fromNode.y + from_SideOffsetY,
+
+                            fromNode.x + from_SideOffsetX + fromCurveOffset.controlOffsetX,
+                            fromNode.y + from_SideOffsetY + fromCurveOffset.controlOffsetY,
+
+                            toNode.x + to_SideOffsetX + toCurveOffset.controlOffsetX,
+                            toNode.y + to_SideOffsetY + toCurveOffset.controlOffsetY,
+
+                            // End point at toNode
+                            toNode.x + to_SideOffsetX,
+                            toNode.y + to_SideOffsetY,
+
+                            false  // Not a closed path
+                        );
+
+                        if ('color' in edge) {
+                            curve.stroke = getColorByIndex(edge.color);
+                        } else curve.stroke = '#c0c0c0';
+                        curve.linewidth = 4;
+                        curve.fill = 'transparent';
+                        curve.fillOpacity = 0;
+                        curve.closed = false;
+                    }
+                });
+                two.update()
+                EDGES = CANVAS.querySelector('svg');
+                // <!-- --------------------------- Draw Edges END ---------------------------- -->
+
+                canvasParsed.nodes.forEach(node => {
+                    const card = document.createElement('div');
+                    if ('color' in node) card.style.borderColor = getColorByIndex(node.color);
+                    switch (node.type) {
+                        case "text":
+                        default:
+                            card.classList.add('card', 'text');
+                            if (node.text) {
+                                const cardDiv = parseStringToMarkdown(node.text);
+                                card.innerHTML = DOMPurify.sanitize(cardDiv.innerHTML);
+                                cardDiv.remove();
+                                if (BACKLINKS) mapBacklinksToJson(BACKLINKS);
+                            }
+                            break;
+                        case "file":
+                            card.classList.add('card', 'file');
+                            card.textContent = node.file;
+                            break;
+                        case "link":
+                            card.classList.add('card', 'link');
+                            card.textContent = node.link;
+                            break;
+                        case "group":
+                            card.classList.add('card', 'group');
+                            if (node.label !== "") {
+                                const groupLabel = document.createElement('p')
+                                groupLabel.textContent = node.label;
+                                card.appendChild(groupLabel);
+                            }
+                            break;
+                    }
+                    card.style.position = 'absolute';
+                    card.style.top = `${node.y + (-minY) + (canvasWidth / 2)}px`;
+                    card.style.left = `${node.x + (-minX) + (canvasWidth / 2)}px`;
+
+                    card.style.width = `${node.width}px`;
+                    card.style.height = `${node.height}px`;
+
+                    canvasContent.appendChild(card);
+                });
+
+                const boundingBox = getBoundingBoxOfChildren(canvasContent);
+                if (boundingBox) {
+                    const center = getCenterOfBoundingBox(boundingBox);
+                    console.info(`Canvas center: x=${center.x}, y=${center.y}`);
+                    const FILEREADWidth = FILEREAD.offsetWidth;
+                    const FILEREADHeight = FILEREAD.offsetHeight;
+
+                    const boundingBoxVolume = boundingBox.height * boundingBox.width;
+                    const canvasVolume = canvasWidth ** 2;
+
+                    const scale = (boundingBoxVolume / canvasVolume);
+
+                    canvasContent.style.transform = `scale(${(1 - scale) / 2})`;
+                    EDGES.style.transform = `scale(${(1 - scale) / 2})`;
+
+                    _scrollLeft = center.x - boundingBox.width / 2;
+                    _scrollTop = center.y - boundingBox.height / 2;
+
+                    if (window.innerWidth < 481) {
+                        _scrollLeft += window.innerWidth;
+                        _scrollTop += window.innerHeight / 2;
+                    }
+                    FILEREAD.scrollLeft = _scrollLeft; FILEREAD.scrollTop = _scrollTop;
+                } else console.warn('The canvas has no children.');
+
+                FILEREAD.addEventListener('wheel', adjustCanvasScaleOnScroll);
+            } catch (e) {
+                console.error("Error parsing canvas:", e);
+            }
+        });
+    }
+</script>
+
+<!-- --------------------- Canvas movement and zooming --------------------- -->
+<script>
+    function resetCanvasPosition() {
+        if (_scrollLeft) FILEREAD.scrollLeft = _scrollLeft;
+        if (_scrollTop) FILEREAD.scrollTop = _scrollTop;
+    }
+
+    function getBoundingBoxOfChildren(parentElement) {
+        const children = parentElement.children;
+        if (children.length === 0) {
+            return null;
+        }
+        // Initialize the bounding box with the first child's bounding rectangle
+        const firstChildRect = children[0].getBoundingClientRect();
+        let minX = firstChildRect.left;
+        let minY = firstChildRect.top;
+        let maxX = firstChildRect.right;
+        let maxY = firstChildRect.bottom;
+
+        // Iterate over all children to find the bounding box
+        for (let i = 1; i < children.length; i++) {
+            const rect = children[i].getBoundingClientRect();
+            if (rect.left < minX) minX = rect.left;
+            if (rect.top < minY) minY = rect.top;
+            if (rect.right > maxX) maxX = rect.right;
+            if (rect.bottom > maxY) maxY = rect.bottom;
+        }
+
+        const boundingBox = {
+            left: minX,
+            top: minY,
+            right: maxX,
+            bottom: maxY,
+            width: maxX - minX,
+            height: maxY - minY,
+        };
+        return boundingBox;
+    }
+
+    function getColorByIndex(colorInt) {
+        switch (parseInt(colorInt)) {
+            case 1: return '#ea3b50';
+            case 2: return '#ee7e0f';
+            case 3: return '#e0ac00';
+            case 4: return '#09b94f';
+            case 5: return '#18c5c2';
+            default: return '#c0c0c0';
+        }
+    }
+
+    // Function to calculate the center of the bounding box
+    function getCenterOfBoundingBox(boundingBox) {
+        const centerX = boundingBox.left + (boundingBox.width / 2);
+        const centerY = boundingBox.top + (boundingBox.height / 2);
+        return { x: centerX, y: centerY };
+    }
+
+    function adjustCanvasScaleOnScroll(e) {
+        if (e.ctrlKey) {
+            e.preventDefault();
+
+            const canvasContent = CANVAS.querySelector('#canvas-content');
+            let scale = parseFloat(canvasContent.style.transform.replace(/[^0-9.-]/g, ''));
+            if (isNaN(scale)) scale = 1; // Default scale
+
+            // Get cursor position relative to the canvas
+            const rect = CANVAS.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            // Calculate the point on the canvas before scaling
+            const pointBeforeScale = {
+                x: (FILEREAD.scrollLeft + x) / scale,
+                y: (FILEREAD.scrollTop + y) / scale
+            };
+
+            console.info("Scroll direction: " + (e.deltaY > 0 ? "down" : "up"));
+            if (e.deltaY > 0) {
+                scale = Math.max(0.1, scale - 0.01);
+            } else {
+                scale = Math.min(1, scale + 0.01);
+            }
+
+            canvasContent.style.transform = `scale(${scale})`;
+            EDGES.style.transform = `scale(${scale})`;
+            EDGES.style.transformOrigin = 'center center';
+
+            const scrollMultiplier = 0.02;
+            const deltaX = (pointBeforeScale.x * scale - (FILEREAD.scrollLeft + x)) * scrollMultiplier;
+            const deltaY = (pointBeforeScale.y * scale - (FILEREAD.scrollTop + y)) * scrollMultiplier;
+            FILEREAD.scrollLeft += deltaX;
+            FILEREAD.scrollTop += deltaY;
+        }
+    }
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const homepage = '{{ site.obsidian_homepage | escape }}';
+        if (homepage && homepage.endsWith('.canvas')) {
+            loadCanvas(homepage);
+            console.log("canvas read loaded: " + homepage);
+        }
+
+        CANVAS.addEventListener('mousemove', function (e) {
+            const rect = CANVAS.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+            // console.log(`Mouse X: ${mouseX}, Mouse Y: ${mouseY}`);
+        });
+    });
+
+    document.addEventListener('obsidian_canvasSelect', function (event) {
+        switchPage(event.detail.filePath);
+        loadCanvas(event.detail.filePath);
+    });
+</script>
+
+<!-- --------------------------- Drag Listeners ---------------------------- -->
+<!-- <script>
+    const fileRead = document.querySelector('#fileread');
+    let isMouseDown = false;
+    let lastMouseX = 0;
+    let lastMouseY = 0;
+    let lastTime = 0;
+
+    fileRead.addEventListener('mousedown', (event) => {
+        isMouseDown = true;
+        const canvasContent = CANVAS.querySelector('#canvas-content');
+        canvasContent.style.pointerEvents = 'none';
+        canvasContent.style.userSelect = 'none';
+
+        lastMouseX = event.offsetX;
+        lastMouseY = event.offsetY;
+        lastTime = performance.now(); // Record the time when mouse is pressed
+
+        console.log(`Mouse pressed at: ${lastMouseX}, ${lastMouseY}`);
+    });
+
+    // Mouse move event to track the mouse movement
+    fileRead.addEventListener('mousemove', (event) => {
+        if (isMouseDown) {
+            const currentMouseX = event.offsetX;
+            const currentMouseY = event.offsetY;
+            const currentTime = performance.now();
+
+            let deltaX = currentMouseX - lastMouseX;
+            let deltaY = currentMouseY - lastMouseY;
+            const deltaTime = currentTime - lastTime;
+
+            let velocityX = deltaX / deltaTime;
+            velocityX = velocityX.toFixed(1)
+            let velocityY = deltaY / deltaTime;
+            velocityY = velocityY.toFixed(1)
+
+            // if (Math.abs(deltaX) > 1) deltaX = Math.sign(deltaX) * 1;
+            // if (Math.abs(deltaY) > 1) deltaY = Math.sign(deltaY) * 1;
+
+            // if (Math.abs(velocityX) > 1) velocityX = Math.sign(velocityX) * 1;
+            // if (Math.abs(velocityY) > 1) velocityY = Math.sign(velocityY) * 1;
+
+            console.log(`Velocity X: ${velocityX} px/ms, Velocity Y: ${velocityY} px/ms`);
+            FILEREAD.scrollLeft -= velocityX * 20; FILEREAD.scrollTop -= velocityY * 20;
+
+            lastMouseX = currentMouseX;
+            lastMouseY = currentMouseY;
+            lastTime = currentTime;
+        }
+    });
+
+    // Mouse up event to stop tracking
+    fileRead.addEventListener('mouseup', () => {
+        isMouseDown = false;
+        const canvasContent = CANVAS.querySelector('#canvas-content');
+        canvasContent.style.pointerEvents = 'auto';
+        canvasContent.style.userSelect = 'auto';
+        console.log('Mouse released');
+    });
+
+    fileRead.addEventListener('mouseleave', () => {
+        console.log('Mouse left the element!');
+        isMouseDown = false;
+        const canvasContent = CANVAS.querySelector('#canvas-content');
+        canvasContent.style.pointerEvents = 'auto';
+        canvasContent.style.userSelect = 'auto';
+    });
+</script> -->

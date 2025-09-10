@@ -2,12 +2,14 @@
 
 source "https://rubygems.org"
 
-# gem "rails"
-
-gem "github-pages"
+gem "jekyll"
+gem "webrick"
+gem "kramdown"
+gem "kramdown-parser-gfm"
 
 group :jekyll_plugins do
   gem "jekyll-sitemap"
   gem "jekyll-feed"
   gem "jekyll-seo-tag"
+  gem "jekyll-obsidian"
 end

@@ -1,0 +1,116 @@
+<body>
+    <div id="top-container">
+        <button id="homepage" onclick="loadHomepage()">
+            <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                width="24" height="24" fill="none"
+                viewBox="0 0 24 24">
+                <path stroke="currentColor" stroke-linecap="round"
+                    stroke-linejoin="round" stroke-width="1.5"
+                    d="m4 12 8-8 8 8M6 10.5V19a1 1 0 0 0 1 1h3v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h3a1 1 0 0 0 1-1v-8.5" />
+            </svg>
+        </button>
+        <button id="search" onclick="dispatchModalSelectEvt('search')"
+            popovertarget="search-modal">
+            <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                width="22" height="22" fill="none"
+                viewBox="0 0 24 24">
+                <path stroke="currentColor" stroke-linecap="round"
+                    stroke-width="2"
+                    d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z" />
+            </svg>
+
+        </button>
+        <button id="tags" onclick="dispatchModalSelectEvt('tags')">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                fill="currentColor" viewBox="0 0 16 16">
+                <path
+                    d="M3 2v4.586l7 7L14.586 9l-7-7zM2 2a1 1 0 0 1 1-1h4.586a1 1 0 0 1 .707.293l7 7a1 1 0 0 1 0 1.414l-4.586 4.586a1 1 0 0 1-1.414 0l-7-7A1 1 0 0 1 2 6.586z" />
+                <path
+                    d="M5.5 5a.5.5 0 1 1 0-1 .5.5 0 0 1 0 1m0 1a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3M1 7.086a1 1 0 0 0 .293.707L8.75 15.25l-.043.043a1 1 0 0 1-1.414 0l-7-7A1 1 0 0 1 0 7.586V3a1 1 0 0 1 1-1z" />
+            </svg>
+        </button>
+    </div>
+    <div id="bottom-container">
+        <button id="info" onclick="dispatchModalSelectEvt('info')"
+            popovertarget="info-modal">
+            <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                width="24" height="24" fill="none"
+                viewBox="0 0 24 24">
+                <path stroke="currentColor" stroke-linecap="round"
+                    stroke-linejoin="round" stroke-width="2"
+                    d="M10 11h2v5m-2 0h4m-2.592-8.5h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+            </svg>
+        </button>
+    </div>
+</body>
+<!-- ---------------------------- Load homepage ---------------------------- -->
+<script>
+    function loadHomepage() {
+        let homepage = '{{ site.obsidian_homepage | escape }}';
+        if (homepage) {
+            if (homepage.endsWith('.md'))
+                homepage = homepage.replace('.md', '.mdj');
+            if (homepage.endsWith('.mdj'))
+            {
+                switchPage(homepage);
+                loadNote(homepage);
+            }
+        }
+    }
+</script>
+
+<!-- ------------------------- Sidebar DOM events -------------------------- -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const homepage = '{{ site.obsidian_homepage | escape }}'
+        const breadcrumbs = SIDEBAR.querySelector('button#homepage');
+
+        if (!homepage) { breadcrumbs.style.display = "none"; }
+    });
+    function dispatchModalSelectEvt(modalType, modalData = '') {
+        switch (modalType) {
+            case 'info':
+            default:
+                console.debug("selected info modal");
+                break;
+            case 'search':
+                console.debug("selected search modal");
+                break;
+            case 'tags':
+                console.debug("selected tags modal");
+                // const clonedNote = NOTE.cloneNode(true); // `true` ensures deep cloning (copy all child nodes)
+
+                // // Step 3: Modify the ID of the cloned element
+                // // Generate a unique ID, perhaps by using a timestamp or an incrementing index
+                // clonedNote.id = `note-${Date.now()}`;
+
+                // // Step 4: Append the cloned element to its new parent
+                // const notes = FILEREAD.querySelector('#notes');
+                // notes.appendChild(clonedNote);
+                break;
+            case 'media':
+                console.debug("selected media modal");
+                break;
+        }
+        const detail = { modalType, modalData };
+        const event = new CustomEvent('obsidian_modalSelect', { detail });
+        document.dispatchEvent(event);
+    }
+
+    const Modal = {
+        Info: "Info",
+        Search: "Search",
+        Media: "Media",
+    };
+    function toggleModals(modal) {
+        switch (modal) {
+            case Modal.Info:
+            default:
+                break;
+            case Modal.Search:
+                break;
+            case Modal.Media:
+                break;
+        }
+    }
+</script>
