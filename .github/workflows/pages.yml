@@ -1,40 +1,32 @@
-name: Build and Deploy to gh-pages
+name: Build & Commit to gh-pages
 
 on:
-  workflow_dispatch: {}       # Manual only — no auto-deploys
+  push:
+    branches: [ gh-pages ]    # Only run on pushes to gh-pages
+  workflow_dispatch: {}       # Also allow manual trigger
 
 permissions:
-  contents: write             # Needed to push to gh-pages
-
-concurrency:
-  group: deploy
-  cancel-in-progress: true
+  contents: write
 
 jobs:
-  build:
+  build-and-commit:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Ruby
-        uses: ruby/setup-ruby@v1
+      - uses: ruby/setup-ruby@v1
         with:
           ruby-version: '3.2'
           bundler-cache: true
 
-      - name: Install dependencies
-        run: bundle install
+      - run: bundle install
 
-      - name: Build Jekyll site
-        env:
-          JEKYLL_ENV: production
-        run: bundle exec jekyll build -d _site
+      - run: bundle exec jekyll build -d _site
 
-      - name: Deploy to gh-pages branch
-        uses: JamesIves/github-pages-deploy-action@v4
-        with:
-          branch: gh-pages     # <- live branch
-          folder: _site        # <- built site output
-          clean: true
+      - name: Commit built site back to gh-pages
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add _site
+          git commit -m "Build site from gh-pages source" || echo "No changes to commit"
+          git push origin gh-pages
