@@ -2,7 +2,7 @@ name: Build & Deploy (Actions, from gh-pages)
 
 on:
   push:
-    branches: [ main ]   # only pushes to gh-pages publish
+    branches: [ gh-pages ]   # only pushes to gh-pages publish
   workflow_dispatch: {}
 
 permissions:
