@@ -1,28 +1,22 @@
-name: Build and Deploy Jekyll (with plugins)
+name: Build and Deploy to gh-pages
 
 on:
-  push:
-    branches: [ main ]        # change if your default branch is different
-  workflow_dispatch:
+  workflow_dispatch: {}       # Manual only — no auto-deploys
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write             # Needed to push to gh-pages
 
 concurrency:
-  group: "pages"
+  group: deploy
   cancel-in-progress: true
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
 
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
@@ -31,25 +25,16 @@ jobs:
           bundler-cache: true
 
       - name: Install dependencies
-        run: bundle install --path vendor/bundle
+        run: bundle install
 
-      - name: Build site
+      - name: Build Jekyll site
         env:
           JEKYLL_ENV: production
-        run: bundle exec jekyll build --trace --strict_front_matter
+        run: bundle exec jekyll build -d _site
 
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+      - name: Deploy to gh-pages branch
+        uses: JamesIves/github-pages-deploy-action@v4
         with:
-          path: _site
-
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+          branch: gh-pages     # <- live branch
+          folder: _site        # <- built site output
+          clean: true
