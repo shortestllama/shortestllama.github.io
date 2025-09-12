@@ -1,32 +1,49 @@
-name: Build & Commit to gh-pages
+name: Build & Deploy (Actions, from gh-pages)
 
 on:
   push:
-    branches: [ gh-pages ]    # Only run on pushes to gh-pages
-  workflow_dispatch: {}       # Also allow manual trigger
+    branches: [ gh-pages ]   # only pushes to gh-pages publish
+  workflow_dispatch: {}
 
 permissions:
-  contents: write
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
 
 jobs:
-  build-and-commit:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - uses: actions/configure-pages@v5
 
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: '3.2'
           bundler-cache: true
 
-      - run: bundle install
+      - run: bundle install --path vendor/bundle
 
-      - run: bundle exec jekyll build -d _site
+      - name: Build Jekyll
+        env:
+          JEKYLL_ENV: production
+        run: bundle exec jekyll build --trace --strict_front_matter
 
-      - name: Commit built site back to gh-pages
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add _site
-          git commit -m "Build site from gh-pages source" || echo "No changes to commit"
-          git push origin gh-pages
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
