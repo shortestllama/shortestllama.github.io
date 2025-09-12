@@ -1,14 +1,14 @@
-- name: About
-  link: /about
+# - name: About
+#   link: /about
 - name: Projects
   link: /projects
-- name: Writeups
-  link: /writeups
+# - name: Writeups
+#   link: /writeups
 - name: CV
   link: /cv
-- name: Hobbies
-  link: /personal
-- name: Blog
-  link: /blog
-- name: Flags
-  link: /flags
+# - name: Hobbies
+#   link: /personal
+# - name: Blog
+#   link: /blog
+# - name: Flags
+#   link: /flags
