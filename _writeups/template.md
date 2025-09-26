@@ -1,4 +1,5 @@
 ---
+published: false
 layout: writeup
 title: exatlon_v1
 source: HackTheBox

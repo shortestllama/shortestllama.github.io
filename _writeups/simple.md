@@ -1,4 +1,5 @@
 ---
+published: false
 layout: writeup
 title: Simple
 source: Battelle

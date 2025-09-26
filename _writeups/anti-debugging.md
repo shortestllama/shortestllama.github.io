@@ -1,4 +1,5 @@
 ---
+published: false
 layout: writeup
 title: Anti-Debugging
 source: Battelle

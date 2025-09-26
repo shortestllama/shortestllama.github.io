@@ -2,8 +2,8 @@
 #   link: /about
 - name: Projects
   link: /projects
-# - name: Writeups
-#   link: /writeups
+- name: Writeups
+  link: /writeups
 - name: CV
   link: /cv
 # - name: Hobbies
