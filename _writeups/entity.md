@@ -6,7 +6,7 @@ date: 2025-05-07
 ---
 I start by downloading the challenge archive and unzipping the folder to reveal 3 files.
 ![](/assets/images/writeups/HackTheBox/Entity/enumeration.png)
-The first is the vulnerable executable, the second is the source code so that disassembly is not a requirement, and the thiassets/images/Writeups/HackTheBox/Entity/enumeration.pngrd is a dummy flag text file to help determine when the challenge has been solved.
+The first is the vulnerable executable, the second is the source code so that disassembly is not a requirement, and the third is a dummy flag text file to help determine when the challenge has been solved.
 Once I have determined what the challenge provides, I run the executable to see what I can learn from dynamic analysis.
 ![](/assets/images/writeups/HackTheBox/Entity/first_run.png)
 I don't learn much besides the fact that input is case sensitive. Additionally, I get a sense of what the program does as I'm guessing it executes these options in a loop until the flag is uncovered. To understand better what these options mean, I check out the source code and see what I can uncover.
