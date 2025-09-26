@@ -5,7 +5,7 @@ source: HackTheBox
 category: Pwn
 date: 2025-05-07
 ---
-I start by downloading the challenge archive and unzipping the folder to reveal 3 files.
+shI start by downloading the challenge archive and unzipping the folder to reveal 3 files.
 ![](/assets/images/writeups/HackTheBox/Entity/enumeration.png)
 The first is the vulnerable executable, the second is the source code so that disassembly is not a requirement, and the third is a dummy flag text file to help determine when the challenge has been solved.
 Once I have determined what the challenge provides, I run the executable to see what I can learn from dynamic analysis.
