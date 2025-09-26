@@ -5,6 +5,9 @@ layout: default
 
 <span>{{ page.source }}</span> <b>·</b>
 <span>{{ page.date | date_to_string }}</span> <b>·</b>
-<span>{{ page.read_time }}</span>
+
+{% capture t %}{{ content | reading_time }}{% endcapture %}
+<span class="reading-time">{{ t }} {{ t == '1' ? 'min' : 'mins' }} read</span>
+<!-- <span>{{ page.read_time }}</span> -->
 
 {{ content }}

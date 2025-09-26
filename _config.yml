@@ -52,6 +52,7 @@ plugins:
   - jekyll-sitemap
   - jekyll-seo-tag
   - jekyll-obsidian
+  - jekyll-read-time
 
 exclude:
   - README.md
