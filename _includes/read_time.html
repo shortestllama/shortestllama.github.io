@@ -17,7 +17,7 @@
 -%}
 
 {%- assign words = text | split: ' ' | size -%}
-{%- assign minutes = words | plus: wpm | minus: 1 | divided_by: wpm -%} {# ceil #}
+{%- assign minutes = words | plus: wpm | minus: 1 | divided_by: wpm -%}
 
 {%- if words == 0 -%}
   <span class="reading-time">0 min read</span>
