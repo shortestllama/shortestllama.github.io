@@ -1,0 +1,28 @@
+{%- comment -%}
+  Estimate read time without plugins.
+  - Uses site.reading.wpm if set, else 200 wpm.
+  - Treats "< 1 min" specially.
+{%- endcomment -%}
+{%- assign wpm = site.reading.wpm | default: 200 -%}
+
+{%- comment -%} Normalize content to plain text {%- endcomment -%}
+{%- assign text = include.content
+  | markdownify
+  | strip_html
+  | replace: '&nbsp;', ' '
+  | replace: ' ', ' '  # non‑breaking space (unicode)
+  | replace: '\n', ' '
+  | replace: '\t', ' '
+  | replace: '  ', ' '
+-%}
+
+{%- assign words = text | split: ' ' | size -%}
+{%- assign minutes = words | plus: wpm | minus: 1 | divided_by: wpm -%} {# ceil #}
+
+{%- if words == 0 -%}
+  <span class="reading-time">0 min read</span>
+{%- elsif words < wpm -%}
+  <span class="reading-time">&lt; 1 min read</span>
+{%- else -%}
+  <span class="reading-time">{{ minutes }} min read</span>
+{%- endif -%}

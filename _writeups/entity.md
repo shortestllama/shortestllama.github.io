@@ -3,9 +3,8 @@ layout: writeup
 title: Entity
 source: HackTheBox
 date: 2025-05-07
-read_time: 5 mins?
 ---
-shI start by downloading the challenge archive and unzipping the folder to reveal 3 files.
+I start by downloading the challenge archive and unzipping the folder to reveal 3 files.
 ![](/assets/images/writeups/HackTheBox/Entity/enumeration.png)
 The first is the vulnerable executable, the second is the source code so that disassembly is not a requirement, and the thiassets/images/Writeups/HackTheBox/Entity/enumeration.pngrd is a dummy flag text file to help determine when the challenge has been solved.
 Once I have determined what the challenge provides, I run the executable to see what I can learn from dynamic analysis.
