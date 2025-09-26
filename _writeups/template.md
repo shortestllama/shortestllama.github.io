@@ -4,7 +4,6 @@ layout: writeup
 title: exatlon_v1
 source: HackTheBox
 date: 2025-01-01
-read_time: 5 mins
 ---
 This challenge involved a buffer overflow that was easy to exploit once the canary was leaked.
 
