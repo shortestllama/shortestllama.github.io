@@ -52,7 +52,7 @@ plugins:
   - jekyll-sitemap
   - jekyll-seo-tag
   - jekyll-obsidian
-  - jekyll-read-time
+  - jekyll-time-to-read
 
 exclude:
   - README.md
