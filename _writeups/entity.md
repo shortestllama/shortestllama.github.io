@@ -2,6 +2,7 @@
 layout: writeup
 title: Entity
 source: HackTheBox
+category: Pwn
 date: 2025-05-07
 ---
 I start by downloading the challenge archive and unzipping the folder to reveal 3 files.
