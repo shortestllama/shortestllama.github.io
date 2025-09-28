@@ -100,7 +100,7 @@ whoami gives:
 unprivileged
 ```
 I can only assume I only have permissions for cat-flag and flag.txt, but since I can't read flag.txt, I will try executing cat-flag.
-This works and provides the flag.
+The whole execution flow involves running the socat command, making a note of the Debug TTY Info, opening the Log, marking the page with m, piping the output with | and then providing the mark you just created, then entering !./cat-flag > /dev/pts/X. This works and provides the flag.
 # Flag
 ```bash
 sun{less-is-more-no-really-it-is-just-a-symbolic-link}
