@@ -1,5 +1,5 @@
 ---
-published: false
+published: true
 layout: writeup
 title: Numbers Game
 source: SunshineCTF
@@ -47,10 +47,10 @@ undefined8 main(void)
 ```
 Definitely not easy though, just very clear where the solution lies.
 Trying it in gdb first to see what happens:
-![](manual_solve.png)
+![](/assets/images/writeups/SunshineCTF/Numbers_Game/manual_solve.png)
 Re-examining the disassembly, the input is compared against some random type of value, however, it has a set seed based on the call to time(). Because of this, the comparison value can be dynamically calculated, leading to the binary being exploited.
 After writing a script to replicate the logic and testing it over and over again, I discovered one final obstacle to overcome in the form of 2's complement:
-![](2s_complement.png)
+![](/assets/images/writeups/SunshineCTF/Numbers_Game/2s_complement.png)
 Finally, the code works:
 ```python
 from pwn import *

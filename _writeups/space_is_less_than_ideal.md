@@ -1,5 +1,5 @@
 ---
-published: false
+published: true
 layout: writeup
 title: Space Is Less Than Ideal
 source: SunshineCTF

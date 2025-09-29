@@ -1,5 +1,5 @@
 ---
-published: false
+published: true
 layout: writeup
 title: Jacksonville
 source: SunshineCTF
@@ -31,7 +31,7 @@ What's the best Florida football team?
 WRONG ANSWER!!
 ```
 My first attempt at overwriting the instruction pointer was unsuccessful as I'd later find out being due to stack alignment issues.
-![](Screenshot_2025-09-29_03_37_11.png)
+![](/assets/images/writeups/SunshineCTF/Jacksonville/Screenshot_2025-09-29_03_37_11.png)
 However, now I was glad to rejoice in the success of obtaining rip control and redirecting to the win() function.
 My script for the first attempt is as follows:
 ```python
@@ -55,7 +55,7 @@ p.sendline(buf)
 p.interactive()
 ```
 Once I figured out the problem was only a stack alignment issue, I just had to add a ret gadget to align the stack to a 16 byte boundary and the exploit was successful.
-![](ret_aligns_stack_to_0x10.png)
+![](/assets/images/writeups/SunshineCTF/Jacksonville/ret_aligns_stack_to_0x10.png)
 Here is the script:
 ```python
 from pwn import *

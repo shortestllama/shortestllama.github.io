@@ -1,5 +1,5 @@
 ---
-published: false
+published: true
 layout: writeup
 title: Missioncritical1
 source: SunshineCTF
@@ -20,6 +20,7 @@ Access Denied!
 ```
 I was wrong.
 Ghidra solves the challenge for me.
+{% raw %}
 ```C
 undefined8 main(void)
 
@@ -50,6 +51,7 @@ undefined8 main(void)
   __stack_chk_fail();
 }
 ```
+{% endraw %}
 My input is compared against the input in acStack_98, which is defined at the top of the function.
 # Flag
 ```bash

@@ -1,5 +1,5 @@
 ---
-published: false
+published: true
 layout: writeup
 title: Intergalactic Copyright Infringement
 source: SunshineCTF
@@ -7,7 +7,7 @@ category: Forensics
 date: 2025-09-28
 ---
 I start by opening the pcapng in wireshark to see what the network traffic could potentially be.
-![](wireshark_output.png)
+![](/assets/images/writeups/SunshineCTF/Intergalactic_Copyright_Infringement/wireshark_output.png)
 It seems to primarily be a bittorrent stream, which I've never dealt with before, so it will be difficult extracting the contents.
 With the help of tshark, I reveal crucial information regarding the packet capture to help better understand the challenge and how to solve it.
 ```bash
@@ -106,7 +106,7 @@ file recovered_stream_3.bin
 recovered_stream_3.bin: PDF document, version 1.6, 484 page(s)
 ```
 Opening this reveals the flag on the second page of the pdf.
-![](flag.png)
+![](/assets/images/writeups/SunshineCTF/Intergalactic_Copyright_Infringement/flag.png)
 # Flag
 ```bash
 sun{4rggg_sp4c3_p1r4cy}

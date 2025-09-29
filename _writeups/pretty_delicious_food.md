@@ -1,5 +1,5 @@
 ---
-published: false
+published: true
 layout: writeup
 title: Pretty Delicious Food
 source: SunshineCTF

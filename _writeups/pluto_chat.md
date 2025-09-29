@@ -1,5 +1,5 @@
 ---
-published: false
+published: true
 layout: writeup
 title: Pluto Chat
 source: SunshineCTF
@@ -38,7 +38,7 @@ Ok, finally after much reverse engineering and rewriting things in ghidra, I hav
 There is no loop, so the user enters their username and password, a thread is created to verify the username and password, then that gets encrypted (*HEAVILY*) and sent across the server. Following that, the user (now logged in) can determine if they would like to send a message or exit. If they decide to send a message, it gets encrypted heavily again and sent to the destination.
 If the user does not pass authentication, the program will sleep for 100000 seconds.
 Now that I understand this, my next goal is to take the encrypted messages I have from the evidence.pcap file and reverse engineer the encryption routine in order to decode the messages and recover the flag.
-![](pluto_chat_messages.png)
+![](/assets/images/writeups/SunshineCTF/Pluto_Chat/pluto_chat_messages.png)
 The highlighted messages are the only packets that contain encrypted data. My hypothesis is that the first two highlighted messages pertain to the first user, who I'll call Alice, logging in and the third and fourth highlighted messages pertain to the second user, who I'll call Bob. The final four messages seem to be information passed between the two users, so I will guess that is where I'll find the flag. Based on all that, I will create a python script to reverse the encryption routine and decode the messages.
 HOLY WOW CHATGPT IS AMAZING!!!
 ```python
