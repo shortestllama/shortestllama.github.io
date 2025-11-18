@@ -5,6 +5,7 @@ layout: default
 
 <span>{{ page.source }}</span> <b>·</b>
 <span>{{ page.date | date_to_string }}</span> <b>·</b>
+<span>{{ page.category }}</span> <b>·</b>
 {% include read_time.html content=page.content %}
 
 {{ content }}
