@@ -12,7 +12,8 @@ title: Writeups
       <h2><a href="{{ writeup.url }}">{{ writeup.title }}</a></h2>
       <span>{{ writeup.source }}</span> -
       <span>{{ writeup.date | date_to_string }}</span> -
-      {% include read_time.html content=page.content %}
+      <span>{{ writeup.category }}</span> -
+      {% include read_time.html content=writeup.content %}
     </li>
   {% endfor %}
 </ul>
